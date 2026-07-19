@@ -2,7 +2,7 @@ import { logger } from '../utils/logger.js';
 
 export const botConfig = {
   // =========================
-  // حالة البوت (ما يراه المستخدمون تحت اسم البوت)
+  // حالة البوت
   // =========================
   presence: {
     status: "online",
@@ -16,7 +16,7 @@ export const botConfig = {
   },
 
   // =========================
-  // سلوك الأوامر
+  // إعدادات الأوامر
   // =========================
   commands: {
     owners: process.env.OWNER_IDS?.split(",").map((id) => id.trim()).filter(Boolean) || [],
@@ -34,7 +34,7 @@ export const botConfig = {
     defaultQuestions: [
       { question: "ما هو اسمك؟", required: true },
       { question: "كم عمرك؟", required: true },
-      { question: "لماذا تريد الانضمام إلى السيرفر؟", required: true },
+      { question: "لماذا تريد الانضمام؟", required: true },
     ],
     statusColors: {
       pending: "#FFA500",
@@ -48,7 +48,7 @@ export const botConfig = {
   },
 
   // =========================
-  // ألوان الإمبد والهوية
+  // ألوان الإمبد
   // =========================
   embeds: {
     colors: {
@@ -67,16 +67,8 @@ export const botConfig = {
       fuchsia: "#EB459E",
       red: "#ED4245",
       black: "#000000",
-      giveaway: {
-        active: "#57F287",
-        ended: "#ED4245",
-      },
-      ticket: {
-        open: "#57F287",
-        claimed: "#FAA61A",
-        closed: "#ED4245",
-        pending: "#99AAB5",
-      },
+      giveaway: { active: "#57F287", ended: "#ED4245" },
+      ticket: { open: "#57F287", claimed: "#FAA61A", closed: "#ED4245", pending: "#99AAB5" },
       economy: "#F1C40F",
       birthday: "#E91E63",
       moderation: "#9B59B6",
@@ -88,27 +80,16 @@ export const botConfig = {
         urgent: "#e74c3c",
       },
     },
-    footer: {
-      text: "بوت تيتان",
-      icon: null,
-    },
+    footer: { text: "بوت تيتان", icon: null },
     thumbnail: null,
-    author: {
-      name: null,
-      icon: null,
-      url: null,
-    },
+    author: { name: null, icon: null, url: null },
   },
 
   // =========================
-  // إعدادات الاقتصاد
+  // الاقتصاد
   // =========================
   economy: {
-    currency: {
-      name: "عملة",
-      namePlural: "عملات",
-      symbol: "$",
-    },
+    currency: { name: "عملة", namePlural: "عملات", symbol: "$" },
     startingBalance: 0,
     baseBankCapacity: 100000,
     dailyAmount: 100,
@@ -126,43 +107,20 @@ export const botConfig = {
     robFailJailTime: 3600000,
   },
 
-  // =========================
-  // إعدادات المتجر (Shop)
-  // =========================
   shop: {},
 
   // =========================
-  // نظام التذاكر
+  // التذاكر
   // =========================
   tickets: {
     defaultCategory: null,
     supportRoles: [],
     priorities: {
-      none: {
-        emoji: "⚪",
-        color: "#95A5A6",
-        label: "عادي",
-      },
-      low: {
-        emoji: "🟢",
-        color: "#2ECC71",
-        label: "منخفض",
-      },
-      medium: {
-        emoji: "🟡",
-        color: "#F1C40F",
-        label: "متوسط",
-      },
-      high: {
-        emoji: "🔴",
-        color: "#E74C3C",
-        label: "عالي",
-      },
-      urgent: {
-        emoji: "🚨",
-        color: "#E91E63",
-        label: "عاجل",
-      },
+      none: { emoji: "⚪", color: "#95A5A6", label: "عادي" },
+      low: { emoji: "🟢", color: "#2ECC71", label: "منخفض" },
+      medium: { emoji: "🟡", color: "#F1C40F", label: "متوسط" },
+      high: { emoji: "🔴", color: "#E74C3C", label: "عالي" },
+      urgent: { emoji: "🚨", color: "#E91E63", label: "عاجل" },
     },
     defaultPriority: "none",
     archiveCategory: null,
@@ -170,7 +128,7 @@ export const botConfig = {
   },
 
   // =========================
-  // إعدادات الجيفاوي
+  // الجيفاوي
   // =========================
   giveaways: {
     defaultDuration: 86400000,
@@ -182,20 +140,14 @@ export const botConfig = {
     bypassRoles: [],
   },
 
-  // =========================
-  // إعدادات أعياد الميلاد
-  // =========================
   birthday: {
     defaultRole: null,
     announcementChannel: null,
     timezone: "UTC",
   },
 
-  // =========================
-  // إعدادات التحقق
-  // =========================
   verification: {
-    defaultMessage: "اضغط على الزر أدناه للتحقق من نفسك والحصول على صلاحية الدخول إلى السيرفر!",
+    defaultMessage: "اضغط على الزر أدناه للتحقق من نفسك والحصول على صلاحية الدخول!",
     defaultButtonText: "تحقق",
     autoVerify: {
       defaultCriteria: "none",
@@ -222,9 +174,6 @@ export const botConfig = {
     keepAuditTrail: true,
   },
 
-  // =========================
-  // رسائل الترحيب والوداع
-  // =========================
   welcome: {
     defaultWelcomeMessage: "أهلاً وسهلاً بك {user} في {server}! الآن لدينا {memberCount} عضو.",
     defaultGoodbyeMessage: "غادر {user} السيرفر. الآن لدينا {memberCount} عضو.",
@@ -232,9 +181,6 @@ export const botConfig = {
     defaultGoodbyeChannel: null,
   },
 
-  // =========================
-  // عدادات السيرفر
-  // =========================
   counters: {
     defaults: {
       name: "{name} عداد",
@@ -252,41 +198,21 @@ export const botConfig = {
       updated: "🔄 تم تحديث العداد **{name}**",
     },
     types: {
-      members: {
-        name: "👥 الأعضاء",
-        description: "إجمالي الأعضاء في السيرفر",
-        getCount: (guild) => guild.memberCount.toString(),
-      },
-      bots: {
-        name: "🤖 البوتات",
-        description: "إجمالي حسابات البوتات في السيرفر",
-        getCount: (guild) =>
-          guild.members.cache.filter((m) => m.user.bot).size.toString(),
-      },
-      members_only: {
-        name: "👤 البشر",
-        description: "إجمالي الأعضاء البشر (غير البوتات)",
-        getCount: (guild) =>
-          guild.members.cache.filter((m) => !m.user.bot).size.toString(),
-      },
+      members: { name: "👥 الأعضاء", description: "إجمالي الأعضاء", getCount: (guild) => guild.memberCount.toString() },
+      bots: { name: "🤖 البوتات", description: "إجمالي البوتات", getCount: (guild) => guild.members.cache.filter((m) => m.user.bot).size.toString() },
+      members_only: { name: "👤 البشر", description: "الأعضاء البشر فقط", getCount: (guild) => guild.members.cache.filter((m) => !m.user.bot).size.toString() },
     },
   },
 
-  // =========================
-  // رسائل البوت العامة
-  // =========================
   messages: {
     noPermission: "ليس لديك صلاحية استخدام هذا الأمر.",
     cooldownActive: "يرجى الانتظار {time} قبل استخدام هذا الأمر مرة أخرى.",
     errorOccurred: "حدث خطأ أثناء تنفيذ هذا الأمر.",
-    missingPermissions: "البوت يفتقر إلى الصلاحيات المطلوبة لتنفيذ هذا الإجراء.",
+    missingPermissions: "البوت يفتقر إلى الصلاحيات المطلوبة.",
     commandDisabled: "تم تعطيل هذا الأمر.",
-    maintenanceMode: "البوت حالياً في وضع الصيانة.",
+    maintenanceMode: "البوت في وضع الصيانة.",
   },
 
-  // =========================
-  // تفعيل وتعطيل الميزات
-  // =========================
   features: {
     economy: true,
     leveling: true,
@@ -311,7 +237,7 @@ export const botConfig = {
 };
 
 // =========================
-// دالة التحقق من الإعدادات
+// دالة التحقق
 // =========================
 export function validateConfig(config) {
   const errors = [];
@@ -324,7 +250,14 @@ export function validateConfig(config) {
     logger.debug('POSTGRES_HOST موجود:', !!process.env.POSTGRES_HOST);
     logger.debug('NODE_ENV:', process.env.NODE_ENV);
   }
-  // ... (باقي الدالة كما هي)
+
+  if (!process.env.DISCORD_TOKEN && !process.env.TOKEN) {
+    errors.push("توكن البوت مطلوب (DISCORD_TOKEN أو TOKEN)");
+  }
+  if (!process.env.CLIENT_ID) {
+    errors.push("CLIENT_ID مطلوب");
+  }
+
   return errors;
 }
 
@@ -339,7 +272,7 @@ if (configErrors.length > 0) {
 export const BotConfig = botConfig;
 
 // =========================
-// خريطة تصنيفات الأوامر (مترجمة)
+// خريطة التصنيفات (مترجمة)
 // =========================
 const COMMAND_CATEGORY_FEATURE_MAP = {
   مساعدة: "help",
@@ -373,9 +306,7 @@ export function getCommandPrefix() {
 }
 
 export function getBotOwners() {
-  return (botConfig.commands?.owners ?? [])
-    .map((id) => String(id).trim())
-    .filter(Boolean);
+  return (botConfig.commands?.owners ?? []).map((id) => String(id).trim()).filter(Boolean);
 }
 
 export function isBotOwner(userId) {
@@ -406,6 +337,28 @@ export function isCommandCategoryEnabled(category) {
   const featureKey = COMMAND_CATEGORY_FEATURE_MAP[normalized];
   if (!featureKey) return true;
   return isFeatureEnabled(featureKey);
+}
+
+export function getColor(path, fallback = "#99AAB5") {
+  if (typeof path === "number") return path;
+  if (typeof path === "string" && path.startsWith("#")) {
+    return parseInt(path.replace("#", ""), 16);
+  }
+  const result = path
+    .split(".")
+    .reduce((obj, key) => (obj && obj[key] !== undefined ? obj[key] : fallback), botConfig.embeds.colors);
+
+  if (typeof result === "string" && result.startsWith("#")) {
+    return parseInt(result.replace("#", ""), 16);
+  }
+  return result;
+}
+
+export function getRandomColor() {
+  const colors = Object.values(botConfig.embeds.colors).flatMap((color) =>
+    typeof color === "string" ? color : Object.values(color)
+  );
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 export default botConfig;
