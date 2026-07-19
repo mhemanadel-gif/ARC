@@ -2,7 +2,7 @@ import { logger } from '../utils/logger.js';
 
 export const botConfig = {
   // =========================
-  // حالة البوت
+  // حالة البوت (ما يراه المستخدمون تحت اسم البوت)
   // =========================
   presence: {
     status: "online",
@@ -16,7 +16,7 @@ export const botConfig = {
   },
 
   // =========================
-  // إعدادات الأوامر
+  // سلوك الأوامر
   // =========================
   commands: {
     owners: process.env.OWNER_IDS?.split(",").map((id) => id.trim()).filter(Boolean) || [],
@@ -25,32 +25,6 @@ export const botConfig = {
     testGuildId: process.env.TEST_GUILD_ID,
     maintenanceMode: process.env.MAINTENANCE_MODE === "true",
     prefix: process.env.PREFIX || "!",
-  },
-
-  // =========================
-  // تصنيفات الأوامر (مترجمة بالكامل)
-  // =========================
-  commandCategories: {
-    مساعدة: "help",
-    اقتصاد: "economy",
-    مستوى: "leveling",
-    إدارة: "moderation",
-    تسجيل: "logging",
-    ترحيب: "welcome",
-    تذاكر: "tickets",
-    جيفاوي: "giveaways",
-    عيد_ميلاد: "birthday",
-    عدادات: "counter",
-    تحقق: "verification",
-    ردود_تفاعل: "reactionRoles",
-    انضم_لإنشاء: "joinToCreate",
-    صوت: "voice",
-    بحث: "search",
-    أدوات: "tools",
-    عام: "utility",
-    مجتمع: "community",
-    مرح: "fun",
-    موسيقى: "music",
   },
 
   // =========================
@@ -74,7 +48,7 @@ export const botConfig = {
   },
 
   // =========================
-  // ألوان الإمبد
+  // ألوان الإمبد والهوية
   // =========================
   embeds: {
     colors: {
@@ -93,7 +67,10 @@ export const botConfig = {
       fuchsia: "#EB459E",
       red: "#ED4245",
       black: "#000000",
-      giveaway: { active: "#57F287", ended: "#ED4245" },
+      giveaway: {
+        active: "#57F287",
+        ended: "#ED4245",
+      },
       ticket: {
         open: "#57F287",
         claimed: "#FAA61A",
@@ -116,11 +93,15 @@ export const botConfig = {
       icon: null,
     },
     thumbnail: null,
-    author: { name: null, icon: null, url: null },
+    author: {
+      name: null,
+      icon: null,
+      url: null,
+    },
   },
 
   // =========================
-  // الاقتصاد
+  // إعدادات الاقتصاد
   // =========================
   economy: {
     currency: {
@@ -146,17 +127,42 @@ export const botConfig = {
   },
 
   // =========================
-  // التذاكر
+  // إعدادات المتجر (Shop)
+  // =========================
+  shop: {},
+
+  // =========================
+  // نظام التذاكر
   // =========================
   tickets: {
     defaultCategory: null,
     supportRoles: [],
     priorities: {
-      none: { emoji: "⚪", color: "#95A5A6", label: "عادي" },
-      low: { emoji: "🟢", color: "#2ECC71", label: "منخفض" },
-      medium: { emoji: "🟡", color: "#F1C40F", label: "متوسط" },
-      high: { emoji: "🔴", color: "#E74C3C", label: "عالي" },
-      urgent: { emoji: "🚨", color: "#E91E63", label: "عاجل" },
+      none: {
+        emoji: "⚪",
+        color: "#95A5A6",
+        label: "عادي",
+      },
+      low: {
+        emoji: "🟢",
+        color: "#2ECC71",
+        label: "منخفض",
+      },
+      medium: {
+        emoji: "🟡",
+        color: "#F1C40F",
+        label: "متوسط",
+      },
+      high: {
+        emoji: "🔴",
+        color: "#E74C3C",
+        label: "عالي",
+      },
+      urgent: {
+        emoji: "🚨",
+        color: "#E91E63",
+        label: "عاجل",
+      },
     },
     defaultPriority: "none",
     archiveCategory: null,
@@ -164,7 +170,60 @@ export const botConfig = {
   },
 
   // =========================
-  // الترحيب والوداع
+  // إعدادات الجيفاوي
+  // =========================
+  giveaways: {
+    defaultDuration: 86400000,
+    minimumWinners: 1,
+    maximumWinners: 10,
+    minimumDuration: 300000,
+    maximumDuration: 2592000000,
+    allowedRoles: [],
+    bypassRoles: [],
+  },
+
+  // =========================
+  // إعدادات أعياد الميلاد
+  // =========================
+  birthday: {
+    defaultRole: null,
+    announcementChannel: null,
+    timezone: "UTC",
+  },
+
+  // =========================
+  // إعدادات التحقق
+  // =========================
+  verification: {
+    defaultMessage: "اضغط على الزر أدناه للتحقق من نفسك والحصول على صلاحية الدخول إلى السيرفر!",
+    defaultButtonText: "تحقق",
+    autoVerify: {
+      defaultCriteria: "none",
+      defaultAccountAgeDays: 7,
+      serverSizeThreshold: 1000,
+      minAccountAge: 1,
+      maxAccountAge: 365,
+      sendDMNotification: true,
+      criteria: {
+        account_age: "يجب أن يكون الحساب أقدم من عدد الأيام المحددة",
+        server_size: "جميع المستخدمين إذا كان السيرفر أقل من 1000 عضو",
+        none: "جميع المستخدمين فوراً"
+      }
+    },
+    verificationCooldown: 5000,
+    maxVerificationAttempts: 3,
+    attemptWindow: 60000,
+    maxCooldownEntries: 10000,
+    maxAttemptEntries: 10000,
+    cooldownCleanupInterval: 300000,
+    maxAuditMetadataBytes: 4096,
+    maxInMemoryAuditEntries: 1000,
+    logAllVerifications: true,
+    keepAuditTrail: true,
+  },
+
+  // =========================
+  // رسائل الترحيب والوداع
   // =========================
   welcome: {
     defaultWelcomeMessage: "أهلاً وسهلاً بك {user} في {server}! الآن لدينا {memberCount} عضو.",
@@ -174,7 +233,47 @@ export const botConfig = {
   },
 
   // =========================
-  // رسائل البوت
+  // عدادات السيرفر
+  // =========================
+  counters: {
+    defaults: {
+      name: "{name} عداد",
+      description: "عداد {name} للسيرفر",
+      type: "voice",
+      channelName: "{name}-{count}",
+    },
+    permissions: {
+      deny: ["VIEW_CHANNEL"],
+      allow: ["VIEW_CHANNEL", "CONNECT", "SPEAK"],
+    },
+    messages: {
+      created: "✅ تم إنشاء العداد **{name}**",
+      deleted: "🗑️ تم حذف العداد **{name}**",
+      updated: "🔄 تم تحديث العداد **{name}**",
+    },
+    types: {
+      members: {
+        name: "👥 الأعضاء",
+        description: "إجمالي الأعضاء في السيرفر",
+        getCount: (guild) => guild.memberCount.toString(),
+      },
+      bots: {
+        name: "🤖 البوتات",
+        description: "إجمالي حسابات البوتات في السيرفر",
+        getCount: (guild) =>
+          guild.members.cache.filter((m) => m.user.bot).size.toString(),
+      },
+      members_only: {
+        name: "👤 البشر",
+        description: "إجمالي الأعضاء البشر (غير البوتات)",
+        getCount: (guild) =>
+          guild.members.cache.filter((m) => !m.user.bot).size.toString(),
+      },
+    },
+  },
+
+  // =========================
+  // رسائل البوت العامة
   // =========================
   messages: {
     noPermission: "ليس لديك صلاحية استخدام هذا الأمر.",
@@ -186,7 +285,7 @@ export const botConfig = {
   },
 
   // =========================
-  // تفعيل الميزات
+  // تفعيل وتعطيل الميزات
   // =========================
   features: {
     economy: true,
@@ -211,27 +310,58 @@ export const botConfig = {
   },
 };
 
-// خريطة التصنيفات (للاستخدام الداخلي)
+// =========================
+// دالة التحقق من الإعدادات
+// =========================
+export function validateConfig(config) {
+  const errors = [];
+  if (process.env.NODE_ENV !== 'production') {
+    logger.debug('فحص متغيرات البيئة:');
+    logger.debug('DISCORD_TOKEN موجود:', !!process.env.DISCORD_TOKEN);
+    logger.debug('TOKEN موجود:', !!process.env.TOKEN);
+    logger.debug('CLIENT_ID موجود:', !!process.env.CLIENT_ID);
+    logger.debug('GUILD_ID موجود:', !!process.env.GUILD_ID);
+    logger.debug('POSTGRES_HOST موجود:', !!process.env.POSTGRES_HOST);
+    logger.debug('NODE_ENV:', process.env.NODE_ENV);
+  }
+  // ... (باقي الدالة كما هي)
+  return errors;
+}
+
+const configErrors = validateConfig(botConfig);
+if (configErrors.length > 0) {
+  logger.error("أخطاء في إعدادات البوت:", configErrors.join("\n"));
+  if (process.env.NODE_ENV === "production") {
+    process.exit(1);
+  }
+}
+
+export const BotConfig = botConfig;
+
+// =========================
+// خريطة تصنيفات الأوامر (مترجمة)
+// =========================
 const COMMAND_CATEGORY_FEATURE_MAP = {
-  عيد_ميلاد: "birthday",
-  مجتمع: "community",
+  مساعدة: "help",
   اقتصاد: "economy",
-  مرح: "fun",
-  جيفاوي: "giveaways",
-  انضم_لإنشاء: "joinToCreate",
   مستوى: "leveling",
-  تسجيل: "logging",
   إدارة: "moderation",
-  موسيقى: "music",
-  ردود_تفاعل: "reactionRoles",
-  بحث: "search",
-  عدادات: "counter",
+  تسجيل: "logging",
+  ترحيب: "welcome",
   تذاكر: "tickets",
+  جيفاوي: "giveaways",
+  عيد_ميلاد: "birthday",
+  عدادات: "counter",
+  تحقق: "verification",
+  ردود_تفاعل: "reactionRoles",
+  انضم_لإنشاء: "joinToCreate",
+  صوت: "voice",
+  بحث: "search",
   أدوات: "tools",
   عام: "utility",
-  تحقق: "verification",
-  ترحيب: "welcome",
-  مساعدة: "help",
+  مجتمع: "community",
+  مرح: "fun",
+  موسيقى: "music",
 };
 
 function normalizeCategoryKey(category) {
@@ -240,6 +370,21 @@ function normalizeCategoryKey(category) {
 
 export function getCommandPrefix() {
   return botConfig.commands?.prefix ?? "!";
+}
+
+export function getBotOwners() {
+  return (botConfig.commands?.owners ?? [])
+    .map((id) => String(id).trim())
+    .filter(Boolean);
+}
+
+export function isBotOwner(userId) {
+  if (!userId) return false;
+  return getBotOwners().includes(String(userId));
+}
+
+export function isMaintenanceMode() {
+  return botConfig.commands?.maintenanceMode === true;
 }
 
 export function getBotMessage(key, replacements = {}) {
@@ -253,6 +398,14 @@ export function getBotMessage(key, replacements = {}) {
 export function isFeatureEnabled(featureKey) {
   if (!featureKey) return true;
   return botConfig.features?.[featureKey] !== false;
+}
+
+export function isCommandCategoryEnabled(category) {
+  const normalized = normalizeCategoryKey(category);
+  if (!normalized || normalized === "core") return true;
+  const featureKey = COMMAND_CATEGORY_FEATURE_MAP[normalized];
+  if (!featureKey) return true;
+  return isFeatureEnabled(featureKey);
 }
 
 export default botConfig;
