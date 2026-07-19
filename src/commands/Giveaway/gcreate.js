@@ -1,136 +1,116 @@
-import { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, ChannelType, MessageFlags } from 'discord.js';
-import { errorEmbed, successEmbed } from '../../utils/embeds.js';
-import { logger } from '../../utils/logger.js';
-import { TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
-import { saveGiveaway } from '../../utils/giveaways.js';
-import { 
-    parseDuration, 
-    validatePrize, 
-    validateWinnerCount,
-    createGiveawayEmbed, 
-    createGiveawayButtons 
-} from '../../services/giveawayService.js';
-import { logEvent, EVENT_TYPES } from '../../services/loggingService.js';
-import { InteractionHelper } from '../../utils/interactionHelper.js';
-
-import { botConfig } from '../../config/bot.js';
-
-const GIVEAWAY_MIN_WINNERS = botConfig.giveaways?.minimumWinners ?? 1;
-const GIVEAWAY_MAX_WINNERS = botConfig.giveaways?.maximumWinners ?? 10;
-
-export default {
-    data: new SlashCommandBuilder()
-        .setName("gcreate")
-        .setDescription("Starts a new giveaway in a specified channel.")
-        .addStringOption((option) =>
-            option
-                .setName("duration")
-                .setDescription(
-                    "How long the giveaway should last (e.g., 1h, 30m, 5d).",
-                )
-                .setRequired(true),
-        )
-        .addIntegerOption((option) =>
-            option
-                .setName("winners")
-                .setDescription("The number of winners to pick.")
-                .setMinValue(GIVEAWAY_MIN_WINNERS)
-                .setMaxValue(GIVEAWAY_MAX_WINNERS)
-                .setRequired(true),
-        )
-        .addStringOption((option) =>
-            option
-                .setName("prize")
-                .setDescription("The prize being given away.")
-                .setRequired(true),
-        )
-        .addChannelOption((option) =>
-            option
-                .setName("channel")
-                .setDescription("The channel to send the giveaway to (defaults to current channel).")
-                .addChannelTypes(ChannelType.GuildText)
-                .setRequired(false),
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
-
-    async execute(interaction) {
-        // Defer up front: sending the giveaway message + DB write can exceed the 3s window
-        await InteractionHelper.safeDefer(interaction, { flags: MessageFlags.Ephemeral });
+async execute(interaction) {
+    try {
+        await InteractionHelper.safeDefer(interaction, {
+            flags: MessageFlags.Ephemeral,
+        });
 
         if (!interaction.inGuild()) {
-            throw new TitanBotError(
-                'Giveaway command used outside guild',
-                ErrorTypes.VALIDATION,
-                'This command can only be used in a server.',
-                { userId: interaction.user.id }
-            );
+            return InteractionHelper.safeReply(interaction, {
+                embeds: [
+                    errorEmbed(
+                        "Error",
+                        "This command can only be used inside a server."
+                    ),
+                ],
+                flags: MessageFlags.Ephemeral,
+            });
         }
 
-        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-            throw new TitanBotError(
-                'User lacks ManageGuild permission',
-                ErrorTypes.PERMISSION,
-                "You need the 'Manage Server' permission to start a giveaway.",
-                { userId: interaction.user.id, guildId: interaction.guildId }
-            );
+        if (
+            !interaction.member.permissions.has(
+                PermissionsBitField.Flags.ManageGuild
+            )
+        ) {
+            return InteractionHelper.safeReply(interaction, {
+                embeds: [
+                    errorEmbed(
+                        "Missing Permission",
+                        "You need **Manage Server** permission."
+                    ),
+                ],
+                flags: MessageFlags.Ephemeral,
+            });
         }
 
-        logger.info(`Giveaway creation started by ${interaction.user.tag} in guild ${interaction.guildId}`);
+        const durationString = interaction.options.getString("duration", true);
+        const winnerCount = interaction.options.getInteger("winners", true);
+        const prize = interaction.options.getString("prize", true);
 
-        const durationString = interaction.options.getString("duration");
-        const winnerCount = interaction.options.getInteger("winners");
-        const prize = interaction.options.getString("prize");
-        const targetChannel = interaction.options.getChannel("channel") || interaction.channel;
+        const targetChannel =
+            interaction.options.getChannel("channel") || interaction.channel;
+
+        if (!targetChannel || !targetChannel.isTextBased()) {
+            return InteractionHelper.safeReply(interaction, {
+                embeds: [
+                    errorEmbed(
+                        "Invalid Channel",
+                        "Please choose a valid text channel."
+                    ),
+                ],
+                flags: MessageFlags.Ephemeral,
+            });
+        }
+
+        const permissions = targetChannel.permissionsFor(
+            interaction.guild.members.me
+        );
+
+        if (
+            !permissions?.has([
+                PermissionFlagsBits.ViewChannel,
+                PermissionFlagsBits.SendMessages,
+            ])
+        ) {
+            return InteractionHelper.safeReply(interaction, {
+                embeds: [
+                    errorEmbed(
+                        "Missing Permissions",
+                        `I can't send messages in ${targetChannel}.`
+                    ),
+                ],
+                flags: MessageFlags.Ephemeral,
+            });
+        }
 
         const durationMs = parseDuration(durationString);
         validateWinnerCount(winnerCount);
-        const prizeName = validatePrize(prize);
 
-        if (!targetChannel.isTextBased()) {
-            throw new TitanBotError(
-                'Target channel is not text-based',
-                ErrorTypes.VALIDATION,
-                'The channel must be a text channel.',
-                { channelId: targetChannel.id, channelType: targetChannel.type }
-            );
-        }
+        const prizeName = validatePrize(prize);
 
         const endTime = Date.now() + durationMs;
 
-        const initialGiveawayData = {
-            messageId: "placeholder",
+        const giveawayData = {
+            messageId: "",
             channelId: targetChannel.id,
             guildId: interaction.guildId,
             prize: prizeName,
             hostId: interaction.user.id,
-            endTime: endTime,
+            endTime,
             endsAt: endTime,
-            winnerCount: winnerCount,
+            winnerCount,
             participants: [],
             isEnded: false,
             ended: false,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
         };
-
-        const embed = createGiveawayEmbed(initialGiveawayData, "active");
-        const row = createGiveawayButtons(false);
 
         const giveawayMessage = await targetChannel.send({
             content: "🎉 **NEW GIVEAWAY** 🎉",
-            embeds: [embed],
-            components: [row],
+            embeds: [
+                createGiveawayEmbed(giveawayData, "active"),
+            ],
+            components: [
+                createGiveawayButtons(false),
+            ],
         });
 
-        initialGiveawayData.messageId = giveawayMessage.id;
-        const saved = await saveGiveaway(
+        giveawayData.messageId = giveawayMessage.id;
+
+        await saveGiveaway(
             interaction.client,
             interaction.guildId,
-            initialGiveawayData,
+            giveawayData
         );
-
-        if (!saved) {
-            logger.warn(`Failed to save giveaway to database: ${giveawayMessage.id}`);
-        }
 
         try {
             await logEvent({
@@ -143,42 +123,56 @@ export default {
                     userId: interaction.user.id,
                     fields: [
                         {
-                            name: 'Prize',
+                            name: "Prize",
                             value: prizeName,
-                            inline: true
+                            inline: true,
                         },
                         {
-                            name: 'Winners',
+                            name: "Winners",
                             value: winnerCount.toString(),
-                            inline: true
+                            inline: true,
                         },
                         {
-                            name: 'Duration',
+                            name: "Duration",
                             value: durationString,
-                            inline: true
+                            inline: true,
                         },
                         {
-                            name: 'Channel',
+                            name: "Channel",
                             value: targetChannel.toString(),
-                            inline: true
-                        }
-                    ]
-                }
+                            inline: true,
+                        },
+                    ],
+                },
             });
-        } catch (logError) {
-            logger.debug('Error logging giveaway creation event:', logError);
+        } catch (err) {
+            logger.warn("Failed to log giveaway.", err);
         }
 
-        logger.info(`Giveaway created successfully: ${giveawayMessage.id} in ${targetChannel.name}`);
+        logger.info(
+            `Giveaway ${giveawayMessage.id} created by ${interaction.user.tag}`
+        );
 
-        await InteractionHelper.safeReply(interaction, {
+        return InteractionHelper.safeReply(interaction, {
             embeds: [
                 successEmbed(
-                    `Giveaway Started! 🎉`,
-                    `A new giveaway for **${prizeName}** has been started in ${targetChannel} and will end in **${durationString}**.`,
+                    "🎉 Giveaway Started!",
+                    `Successfully started **${prizeName}** in ${targetChannel}.`
                 ),
             ],
             flags: MessageFlags.Ephemeral,
         });
-    },
-};
+    } catch (error) {
+        logger.error("Giveaway Error:", error);
+
+        return InteractionHelper.safeReply(interaction, {
+            embeds: [
+                errorEmbed(
+                    "Error",
+                    error.message || "An unexpected error occurred."
+                ),
+            ],
+            flags: MessageFlags.Ephemeral,
+        });
+    }
+}
