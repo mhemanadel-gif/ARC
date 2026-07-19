@@ -2,14 +2,14 @@ import { logger } from '../utils/logger.js';
 
 export const botConfig = {
   // =========================
-  // حالة البوت (ما يراه المستخدمون تحت اسم البوت)
+  // حالة البوت
   // =========================
   presence: {
     status: "online",
     activities: [
       {
         name: "Custom Status",
-        state: "لابوبوووو", 
+        state: "لابوبوووو",
         type: 4,
       },
     ],
@@ -28,7 +28,33 @@ export const botConfig = {
   },
 
   // =========================
-  // نظام التقديمات (التطبيقات)
+  // تصنيفات الأوامر (مترجمة بالكامل)
+  // =========================
+  commandCategories: {
+    مساعدة: "help",
+    اقتصاد: "economy",
+    مستوى: "leveling",
+    إدارة: "moderation",
+    تسجيل: "logging",
+    ترحيب: "welcome",
+    تذاكر: "tickets",
+    جيفاوي: "giveaways",
+    عيد_ميلاد: "birthday",
+    عدادات: "counter",
+    تحقق: "verification",
+    ردود_تفاعل: "reactionRoles",
+    انضم_لإنشاء: "joinToCreate",
+    صوت: "voice",
+    بحث: "search",
+    أدوات: "tools",
+    عام: "utility",
+    مجتمع: "community",
+    مرح: "fun",
+    موسيقى: "music",
+  },
+
+  // =========================
+  // نظام التقديمات
   // =========================
   applications: {
     defaultQuestions: [
@@ -48,7 +74,7 @@ export const botConfig = {
   },
 
   // =========================
-  // ألوان الإمبد والهوية البصرية
+  // ألوان الإمبد
   // =========================
   embeds: {
     colors: {
@@ -67,10 +93,7 @@ export const botConfig = {
       fuchsia: "#EB459E",
       red: "#ED4245",
       black: "#000000",
-      giveaway: {
-        active: "#57F287",
-        ended: "#ED4245",
-      },
+      giveaway: { active: "#57F287", ended: "#ED4245" },
       ticket: {
         open: "#57F287",
         claimed: "#FAA61A",
@@ -93,15 +116,11 @@ export const botConfig = {
       icon: null,
     },
     thumbnail: null,
-    author: {
-      name: null,
-      icon: null,
-      url: null,
-    },
+    author: { name: null, icon: null, url: null },
   },
 
   // =========================
-  // إعدادات الاقتصاد
+  // الاقتصاد
   // =========================
   economy: {
     currency: {
@@ -127,7 +146,7 @@ export const botConfig = {
   },
 
   // =========================
-  // إعدادات التذاكر (Tickets)
+  // التذاكر
   // =========================
   tickets: {
     defaultCategory: null,
@@ -145,60 +164,7 @@ export const botConfig = {
   },
 
   // =========================
-  // إعدادات الجيفاوي
-  // =========================
-  giveaways: {
-    defaultDuration: 86400000,
-    minimumWinners: 1,
-    maximumWinners: 10,
-    minimumDuration: 300000,
-    maximumDuration: 2592000000,
-    allowedRoles: [],
-    bypassRoles: [],
-  },
-
-  // =========================
-  // إعدادات أعياد الميلاد
-  // =========================
-  birthday: {
-    defaultRole: null,
-    announcementChannel: null,
-    timezone: "UTC",
-  },
-
-  // =========================
-  // إعدادات التحقق
-  // =========================
-  verification: {
-    defaultMessage: "اضغط على الزر أدناه للتحقق من نفسك والحصول على صلاحية الدخول للسيرفر!",
-    defaultButtonText: "تحقق",
-    autoVerify: {
-      defaultCriteria: "none",
-      defaultAccountAgeDays: 7,
-      serverSizeThreshold: 1000,
-      minAccountAge: 1,
-      maxAccountAge: 365,
-      sendDMNotification: true,
-      criteria: {
-        account_age: "يجب أن يكون الحساب أقدم من عدد الأيام المحدد",
-        server_size: "جميع المستخدمين إذا كان السيرفر أقل من 1000 عضو",
-        none: "جميع المستخدمين فوراً"
-      }
-    },
-    verificationCooldown: 5000,
-    maxVerificationAttempts: 3,
-    attemptWindow: 60000,
-    maxCooldownEntries: 10000,
-    maxAttemptEntries: 10000,
-    cooldownCleanupInterval: 300000,
-    maxAuditMetadataBytes: 4096,
-    maxInMemoryAuditEntries: 1000,
-    logAllVerifications: true,
-    keepAuditTrail: true,
-  },
-
-  // =========================
-  // رسائل الترحيب والوداع
+  // الترحيب والوداع
   // =========================
   welcome: {
     defaultWelcomeMessage: "أهلاً وسهلاً بك {user} في {server}! الآن لدينا {memberCount} عضو.",
@@ -208,7 +174,7 @@ export const botConfig = {
   },
 
   // =========================
-  // رسائل البوت العامة
+  // رسائل البوت
   // =========================
   messages: {
     noPermission: "ليس لديك صلاحية استخدام هذا الأمر.",
@@ -220,7 +186,7 @@ export const botConfig = {
   },
 
   // =========================
-  // تفعيل/تعطيل الميزات
+  // تفعيل الميزات
   // =========================
   features: {
     economy: true,
@@ -245,34 +211,48 @@ export const botConfig = {
   },
 };
 
-// دالة التحقق من الإعدادات (بقيت كما هي مع بعض الترجمة)
-export function validateConfig(config) {
-  const errors = [];
-  if (process.env.NODE_ENV !== 'production') {
-    logger.debug('فحص متغيرات البيئة:');
-    logger.debug('DISCORD_TOKEN موجود:', !!process.env.DISCORD_TOKEN);
-    // ... (باقي الدالة كما هي)
-  }
-  return errors;
+// خريطة التصنيفات (للاستخدام الداخلي)
+const COMMAND_CATEGORY_FEATURE_MAP = {
+  عيد_ميلاد: "birthday",
+  مجتمع: "community",
+  اقتصاد: "economy",
+  مرح: "fun",
+  جيفاوي: "giveaways",
+  انضم_لإنشاء: "joinToCreate",
+  مستوى: "leveling",
+  تسجيل: "logging",
+  إدارة: "moderation",
+  موسيقى: "music",
+  ردود_تفاعل: "reactionRoles",
+  بحث: "search",
+  عدادات: "counter",
+  تذاكر: "tickets",
+  أدوات: "tools",
+  عام: "utility",
+  تحقق: "verification",
+  ترحيب: "welcome",
+  مساعدة: "help",
+};
+
+function normalizeCategoryKey(category) {
+  return String(category || "").trim().toLowerCase().replace(/\s+/g, "_");
 }
 
-const configErrors = validateConfig(botConfig);
-if (configErrors.length > 0) {
-  logger.error("أخطاء في إعدادات البوت:", configErrors.join("\n"));
-  if (process.env.NODE_ENV === "production") {
-    process.exit(1);
-  }
+export function getCommandPrefix() {
+  return botConfig.commands?.prefix ?? "!";
 }
 
-export const BotConfig = botConfig;
-
-// باقي الدوال (تم تعديل الأسماء والرسائل حيث يلزم)
 export function getBotMessage(key, replacements = {}) {
   let message = botConfig.messages?.[key] || key;
   for (const [placeholder, value] of Object.entries(replacements)) {
     message = message.replace(new RegExp(`\\{${placeholder}\\}`, "g"), String(value));
   }
   return message;
+}
+
+export function isFeatureEnabled(featureKey) {
+  if (!featureKey) return true;
+  return botConfig.features?.[featureKey] !== false;
 }
 
 export default botConfig;
